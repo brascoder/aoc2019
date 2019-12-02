@@ -1,11 +1,14 @@
-defmodule FuelCalc do
-  def call(input_path) do
-    File.stream!(input_path)
-    |> Enum.reduce(0, fn line, acc ->
-      module = line
-               |> String.trim
-               |> String.to_integer
+defmodule AdventOfCode.Day01 do
+  def part1(input) do
+    input
+    |> Enum.reduce(0, fn module, acc ->
+      acc + calculate(module)
+    end)
+  end
 
+  def part2(input) do
+    input
+    |> Enum.reduce(0, fn module, acc ->
       acc + recalculate(module)
     end)
   end
@@ -22,5 +25,3 @@ defmodule FuelCalc do
     end
   end
 end
-
-IO.puts FuelCalc.call("input.txt")
