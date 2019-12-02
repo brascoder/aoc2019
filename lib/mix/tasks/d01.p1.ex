@@ -8,10 +8,7 @@ defmodule Mix.Tasks.D01.P1 do
     File.read!("inputs/day01.txt")
     |> String.trim
     |> String.split("\n")
-    |> Enum.map(fn line ->
-      line
-      |> String.to_integer
-    end)
+    |> Enum.map(&String.to_integer/1)
     |> part1
     |> IO.puts
   end
