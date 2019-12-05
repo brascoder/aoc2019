@@ -1,18 +1,15 @@
 defmodule AdventOfCode.Day03 do
   def part1(input_stream) do
     input_stream
-    |> Stream.map(fn line ->
-      line
-      |> String.trim
-      |> String.split(",")
-      |> line_points
-    end)
+    |> Stream.map(&line_points/1)
     |> find_intersections
     |> find_shortest_distance
   end
 
   defp line_points(line) do
     line
+    |> String.trim
+    |> String.split(",")
     |> Enum.reduce([], fn i, acc ->
       case acc do
         [] -> move({0, 0}, i)
