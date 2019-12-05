@@ -1,15 +1,18 @@
 defmodule AdventOfCode.Day03 do
-  def part1([line1, line2]) do
-    points1 = line_points(line1)
-    points2 = line_points(line2)
-
-    find_intersections(points1, points2)
+  def part1(input_stream) do
+    input_stream
+    |> Stream.map(fn line ->
+      line
+      |> String.trim
+      |> String.split(",")
+      |> line_points
+    end)
+    |> find_intersections
     |> find_shortest_distance
   end
 
   defp line_points(line) do
     line
-    |> String.split(",")
     |> Enum.reduce([], fn i, acc ->
       case acc do
         [] -> move({0, 0}, i)
@@ -34,8 +37,10 @@ defmodule AdventOfCode.Day03 do
     |> Enum.reverse
   end
 
-  defp find_intersections(points1, points2) do
-    Enum.filter(points1, fn x -> Enum.member?(points2, x) end)
+  defp find_intersections(lines) do
+    lines
+    |> Stream.map(&MapSet.new/1)
+    |> Enum.reduce(&MapSet.intersection/2)
   end
 
   defp find_shortest_distance(points) do
