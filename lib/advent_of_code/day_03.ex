@@ -9,7 +9,7 @@ defmodule AdventOfCode.Day03 do
   def part2(input_stream) do
     input_stream
     |> Stream.map(&line_points/1)
-    |> find_intersection_indexes
+    |> find_shortest_segments
   end
 
   defp line_points(line) do
@@ -46,28 +46,24 @@ defmodule AdventOfCode.Day03 do
     |> Enum.reduce(&MapSet.intersection/2)
   end
 
-  defp find_intersection_indexes(lines) do
-    intersections = find_intersections(lines)
-                    |> IO.inspect
-
-    Enum.into(lines, []) |> IO.inspect
-    lines
-               |> Enum.map(fn line ->
-                 line
-                 |> IO.inspect
-                 |> Enum.filter(fn point -> Enum.member?(intersections, point) end)
-                 |> Enum.map(fn point -> {point, Enum.find_index(line, point) + 1} end)
-                 |> Enum.min_by(fn {_, i} -> i end)
-               end)
-               |> IO.inspect
-
-    # for({p1, i1} <- l1, {p2, i2} <- l2, p1 == p2, do: {p1, i1 + i2})
-    # |> Enum.min_by(fn {_, i} -> i end)
-  end
-
   defp find_shortest_distance(points) do
     points
     |> Enum.map(fn {x, y} -> abs(x) + abs(y) end)
     |> Enum.min
+  end
+
+  defp find_shortest_segments(lines) do
+    intersections = find_intersections(lines)
+
+    lines
+    |> Stream.map(fn line ->
+      line
+      |> Enum.filter(fn point -> Enum.member?(intersections, point) end)
+      |> Enum.map(fn point ->
+        {point, Enum.find_index(line, fn p -> p == point end) + 1}
+      end)
+      |> Enum.min_by(fn {_, i} -> i end)
+    end)
+    |> Enum.reduce(0, fn {{_, _}, i}, acc -> acc + i end)
   end
 end
