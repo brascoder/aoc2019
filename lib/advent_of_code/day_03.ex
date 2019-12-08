@@ -1,49 +1,58 @@
 defmodule AdventOfCode.Day03 do
   def part1(input_stream) do
     input_stream
-    |> Stream.map(&line_points/1)
+    |> setup_lines
     |> find_intersections
     |> find_shortest_distance
   end
 
   def part2(input_stream) do
     input_stream
-    |> Stream.map(&line_points/1)
-    |> find_shortest_segments
+    |> setup_lines
+    |> find_shortest_steps
   end
 
-  defp line_points(line) do
-    line
-    |> String.trim
-    |> String.split(",")
-    |> Enum.reduce([], fn i, acc ->
-      case acc do
-        [] -> move({0, 0}, i)
-        _ -> List.flatten(move(hd(acc), i), acc)
-      end
+  defp setup_lines(lines) do
+    lines
+    |> Stream.map(fn line ->
+      line
+      |> String.trim
+      |> String.split(",")
+    end)
+    |> Stream.map(fn instructions ->
+      instructions
+      |> Stream.map(&String.split_at(&1, 1))
+      |> Enum.reduce([{0, 0}], &generate_points/2)
+    end)
+    |> Stream.map(fn points ->
+      points
+      |> Enum.reverse
+      |> tl
     end)
   end
 
-  defp move({x, y}, instruction) do
-    {direction, distance} = instruction
-                            |> String.split_at(1)
-
-    1..String.to_integer(distance)
-    |> Enum.map(fn n ->
-      case direction do
-        "U" -> {x, y + n}
-        "D" -> {x, y - n}
-        "R" -> {x + n, y}
-        "L" -> {x - n, y}
+  defp generate_points({direction, distance}, points) do
+    points
+    |> Stream.iterate(fn [{x, y} = prev | rest] ->
+      point = case direction do
+        "U" -> {x, y + 1}
+        "D" -> {x, y - 1}
+        "R" -> {x + 1, y}
+        "L" -> {x - 1, y}
       end
+
+      [point, prev | rest]
     end)
-    |> Enum.reverse
+    |> Stream.drop(1)
+    |> Stream.take(String.to_integer(distance))
+    |> Enum.at(-1)
   end
 
   defp find_intersections(lines) do
     lines
     |> Stream.map(&MapSet.new/1)
     |> Enum.reduce(&MapSet.intersection/2)
+    |> MapSet.delete({0, 0})
   end
 
   defp find_shortest_distance(points) do
@@ -52,18 +61,13 @@ defmodule AdventOfCode.Day03 do
     |> Enum.min
   end
 
-  defp find_shortest_segments(lines) do
-    intersections = find_intersections(lines)
-
-    lines
-    |> Stream.map(fn line ->
-      line
-      |> Enum.filter(fn point -> Enum.member?(intersections, point) end)
-      |> Enum.map(fn point ->
-        {point, Enum.find_index(line, fn p -> p == point end) + 1}
+  defp find_shortest_steps(lines) do
+    find_intersections(lines)
+    |> Stream.map(fn intersection ->
+      Enum.reduce(lines, 0, fn line, acc ->
+        acc + Enum.find_index(line, fn p -> p == intersection end) + 1
       end)
-      |> Enum.min_by(fn {_, i} -> i end)
     end)
-    |> Enum.reduce(0, fn {{_, _}, i}, acc -> acc + i end)
+    |> Enum.min
   end
 end
