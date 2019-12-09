@@ -1,13 +1,18 @@
 defmodule Mix.Tasks.D03.P2 do
   use Mix.Task
 
-  import AdventOfCode.Day03
+  alias AdventOfCode.WireUtilities
 
   @shortdoc "Day 03 Part 2"
   def run(_args) do
     "inputs/day03.txt"
     |> File.stream!
-    |> part2
+    |> Stream.map(fn line ->
+      line
+      |> String.trim
+      |> String.split(",")
+    end)
+    |> WireUtilities.shortest_steps_distance
     |> IO.puts
   end
 end

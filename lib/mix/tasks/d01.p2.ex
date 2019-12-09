@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.D01.P2 do
   use Mix.Task
 
-  import AdventOfCode.Day01
+  alias AdventOfCode.FuelCalculator
 
   @shortdoc "Day 01 Part 2"
   def run(_args) do
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.D01.P2 do
     |> String.trim
     |> String.split("\n")
     |> Enum.map(&String.to_integer/1)
-    |> part2
+    |> FuelCalculator.run(true)
     |> IO.puts
   end
 end

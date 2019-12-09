@@ -1,5 +1,5 @@
-defmodule AdventOfCode.Day02 do
-  def part1(input) do
+defmodule AdventOfCode.IntcodeComputer do
+  def run(input) do
     read_head = 0
 
     input

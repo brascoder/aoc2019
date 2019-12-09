@@ -1,15 +1,11 @@
-defmodule AdventOfCode.Day01 do
-  def part1(input) do
+defmodule AdventOfCode.FuelCalculator do
+  def run(input, recursive \\ false) do
     input
     |> Enum.reduce(0, fn module, acc ->
-      acc + calculate(module)
-    end)
-  end
-
-  def part2(input) do
-    input
-    |> Enum.reduce(0, fn module, acc ->
-      acc + recalculate(module)
+      case recursive do
+        true -> acc + recalculate(module)
+        _    -> acc + calculate(module)
+      end
     end)
   end
 

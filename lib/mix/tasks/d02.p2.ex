@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.D02.P2 do
   use Mix.Task
 
-  import AdventOfCode.Day02
+  alias AdventOfCode.IntcodeComputer
 
   @shortdoc "Day 02 Part 2"
   def run(_args) do
@@ -12,7 +12,7 @@ defmodule Mix.Tasks.D02.P2 do
       result = input
                |> put_elem(1, n)
                |> put_elem(2, v)
-               |> part1
+               |> IntcodeComputer.run
                |> elem(0)
 
       result == 19690720

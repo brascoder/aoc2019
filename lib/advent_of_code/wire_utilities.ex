@@ -1,24 +1,19 @@
-defmodule AdventOfCode.Day03 do
-  def part1(input_stream) do
-    input_stream
-    |> setup_lines
+defmodule AdventOfCode.WireUtilities do
+  def shortest_manhattan_distance(wires) do
+    wires
+    |> trace_wires
     |> find_intersections
-    |> find_shortest_distance
+    |> find_shortest_manhattan_distance
   end
 
-  def part2(input_stream) do
-    input_stream
-    |> setup_lines
-    |> find_shortest_steps
+  def shortest_steps_distance(wires) do
+    wires
+    |> trace_wires
+    |> find_shortest_steps_distance
   end
 
-  defp setup_lines(lines) do
-    lines
-    |> Stream.map(fn line ->
-      line
-      |> String.trim
-      |> String.split(",")
-    end)
+  defp trace_wires(wires) do
+    wires
     |> Stream.map(fn instructions ->
       instructions
       |> Stream.map(&String.split_at(&1, 1))
@@ -48,24 +43,24 @@ defmodule AdventOfCode.Day03 do
     |> Enum.at(-1)
   end
 
-  defp find_intersections(lines) do
-    lines
+  defp find_intersections(wires) do
+    wires
     |> Stream.map(&MapSet.new/1)
     |> Enum.reduce(&MapSet.intersection/2)
     |> MapSet.delete({0, 0})
   end
 
-  defp find_shortest_distance(points) do
+  defp find_shortest_manhattan_distance(points) do
     points
     |> Enum.map(fn {x, y} -> abs(x) + abs(y) end)
     |> Enum.min
   end
 
-  defp find_shortest_steps(lines) do
-    find_intersections(lines)
+  defp find_shortest_steps_distance(wires) do
+    find_intersections(wires)
     |> Stream.map(fn intersection ->
-      Enum.reduce(lines, 0, fn line, acc ->
-        acc + Enum.find_index(line, fn p -> p == intersection end) + 1
+      Enum.reduce(wires, 0, fn wire, acc ->
+        acc + Enum.find_index(wire, fn p -> p == intersection end) + 1
       end)
     end)
     |> Enum.min
