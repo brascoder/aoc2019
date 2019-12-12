@@ -8,9 +8,8 @@ defmodule Mix.Tasks.D05.P1 do
     File.read!("inputs/day05.txt")
     |> String.trim
     |> String.split(",")
+    |> Enum.map(&String.to_integer/1)
     |> List.to_tuple
-    |> IntcodeComputer.run
-    |> elem(0)
-    |> IO.puts
+    |> IntcodeComputer.run(1)
   end
 end
